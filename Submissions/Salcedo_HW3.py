@@ -99,6 +99,7 @@ correction=np.mean(list2020)/np.mean(list2009)
 print(correction)
 
 #Calculate average for 2009 and correct them using the correction factor. 
+forecast=[]
 for j in range(len(flow)):
         if year[j]==2009 and month[j]==8 and day[j]==22:
                 ind=j
@@ -112,11 +113,13 @@ for k in range(ind,ind+112):
         i=i+1
         if i==7:
                 CorrAver=(sumWeekAver/7)*correction
+                forecast.append(CorrAver)
                 print(week,CorrAver)
                 sumWeekAver=0
                 week=week+1
                 i=0
 
+print(forecast)
 
 #Question # 1
 print(len(flow))
@@ -125,11 +128,68 @@ print(len(month))
 print(len(day))
 
 #Question # 2
+#Look for september 2009 and forecast the values
+for j in range(len(flow)):
+        if year[j]==2009 and month[j]==9 and day[j]==1:
+                ind=j
+                print(ind)
 
+#Perform the forecasting
+forSept=[]
+for j in range(ind,ind+30): 
+        dailyFor=flow[j]*correction
+        forSept.append(dailyFor)
+print("# of Forecasts in september:", len(forSept))
 
+#Determines how many times the daily flow was greater than my forecast
+septFlow=[i for i in range(len(flow)) if month[i]==9] #Total number of entries registered for september
+yr = 1 #Index for taking into account the year
+greaterInd=0
+for i in range(len(septFlow)):
+        if i< 30:
+                if septFlow[i]>forSept[i]:
+                        greaterInd=greaterInd+1
+        else:
+                if i%30 == True:
+                        yr=yr+1
+                
+                if septFlow[i-yr*30]>forSept[i-yr*30]:
+                        greaterId=greaterInd+1      
+                     
+prop = greaterInd/len(septFlow)*100
+print("# of values in september:", len(septFlow))
+print("# of values greater than the forecast", greaterInd)
+print("Ratio", prop)
 
 #Question # 3
+#Determines how many times the daily flow was greater than my forecast
+septFlow=[i for i in range(len(flow)) if month[i]==9 and year[i]<2000 or month[i]==9 and year[i]>2010] #Total number of entries registered for september
+yr = 1 #Index for taking into account the year
+greaterInd=0
+for i in range(len(septFlow)):
+        if i< 30:
+                if septFlow[i]>forSept[i]:
+                        greaterInd=greaterInd+1
+        else:
+                if i%30 == True:
+                        yr=yr+1
+                
+                if septFlow[i-yr*30]>forSept[i-yr*30]:
+                        greaterId=greaterInd+1      
+                     
+prop = greaterInd/len(septFlow)*100
+print("# of values in september:", len(septFlow))
+print("# of values greater than the forecast", greaterInd)
+print("Ratio", prop)
 
 
+#Question # 4
+septEarly=[i for i in range(len(flow)) if month[i]==9 and day[i]<=15]
+septLate=[i for i in range(len(flow)) if month[i]==9 and day[i]>15]
+
+if np.mean(septEarly) > np.mean(septLate):
+        print("Flow tends to decrease in late september")
+else:
+        print("Flow tends to increase in late september")
 
 # %%
