@@ -249,7 +249,7 @@ print('If only the years before 2000 were considered, the total number of times 
 #After 2010
 flow_count_2010 = np.sum((flow_data[:,3] > 56.39) & (flow_data[:,0]>2010) & (flow_data[:,1]==9))
 sept_entries_2010=np.sum(flow_data[:,1]==9 & (flow_data[:,0]>2010))
-print('If only the years before 2000 were considered, the total number of times the daily flow in september was greater than my forecast for Week 1 (56.39 cfs) was',flow_count_2000,', which represents a', (flow_count_2000/sept_entries_2000)*100,'%.')
+print('If only the years after 2010 were considered, the total number of times the daily flow in september was greater than my forecast for Week 1 (56.39 cfs) was',flow_count_2000,', which represents a', (flow_count_2000/sept_entries_2000)*100,'%.')
 
 #Question # 5
 early_sept=np.mean(flow_data[(flow_data[:,1]==9) & (flow_data[:,2]<=15),3])
