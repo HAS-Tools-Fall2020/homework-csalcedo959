@@ -1,6 +1,10 @@
 # Forecast Week 4
 ## *Name:* Camilo Salcedo
 ## *Date:* September 21st 2020
+___
+### Grade
+3/3 - nice job, I like your reasoning for the forecast.
+___
 
 # Forecast description
 
