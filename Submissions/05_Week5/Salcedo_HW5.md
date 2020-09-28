@@ -14,7 +14,6 @@ The dataframe is composed by 4 columns: Year, Month, Day and Flow. The types of 
 The column "Year" is composed as follows:
 | --------- | ------------ |
 | --------- | ------------ |
-|           |              |
 |Count  |11592.000000|
 |Mean | 2004.372671|
 |Std  |    9.162864|
@@ -27,36 +26,29 @@ The column "Year" is composed as follows:
 |dtype  |float64 |
 
  The column "Month" is composed as follows:
- count    11592.000000
-mean         6.486542
-std          3.438779
-min          1.000000
-25%          4.000000
-50%          6.000000
-75%          9.000000
-max         12.000000
-Name: month, dtype: float64
+ |Count |11592.000000|
+ |Mean  |6.486542|
+ |Std |3.438779|
+ |Min |1.000000|
+ |25% |4.000000|
+ |50% |6.000000|
+ |75% |9.000000|
+ |Max |12.000000|
+ |Name  |'month'|
+ |dtype |float64|
 
  The column "Day" is composed as follows:
- count    11592.000000
-mean        15.724379
-std          8.798330
-min          1.000000
-25%          8.000000
-50%         16.000000
-75%         23.000000
-max         31.000000
-Name: day, dtype: float64
-
- The summary of the column "Flow" is below:
-count  11592.000000
-mean     345.630461
-std     1410.832968
-min       19.000000
-25%       93.700000
-50%      158.000000
-75%      216.000000
-max    63400.000000
+ |Count |11592.000000|
+ |Mean  |15.724379|
+ |Std |8.798330|
+ |Min |1.000000|
+ |25% |8.000000|
+ |50% |16.000000|
+ |75% |23.000000|
+ |Max |31.000000|
+ |Name  |'day'|
+ |dtype |float64|
+ 
 
 ## 2. Provide a summary of the flow column including the min, mean, max, standard deviation and quartiles.
 
