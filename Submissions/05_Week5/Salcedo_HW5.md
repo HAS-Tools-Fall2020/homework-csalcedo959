@@ -12,20 +12,19 @@ Using a plot to show the mean flows for the months of July, August and September
 The dataframe is composed by 4 columns: Year, Month, Day and Flow. The types of each column are float64. The summary of each column is described below:
 
 The column "Year" is composed as follows:
-|Count  |11592.000000|
-|Mean |2004.372671|
-
-| :-------- | ------------ |
 | --------- | ------------ |
-|count  |11592.000000|
-|mean | 2004.372671|
-|std  |    9.162864|
-|min  | 1989.000000|
+| --------- | ------------ |
+|           |              |
+|Count  |11592.000000|
+|Mean | 2004.372671|
+|Std  |    9.162864|
+|Min  | 1989.000000|
 |25%  | 1996.000000|
 |50%  | 2004.000000|
 |75%  | 2012.000000|
-|max  | 2020.000000|
-Name: year, dtype: float64
+|Max  | 2020.000000|
+|Name |'year'|
+|dtype  |float64 |
 
  The column "Month" is composed as follows:
  count    11592.000000
