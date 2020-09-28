@@ -138,17 +138,18 @@ The lowest and highest flow values, with its corresponding year, are shown below
 ## 6. Provide a list of historical dates with flows that are within 10% of your week 1 forecast value. If there are none than increase the %10 window until you have at least one other value and report the date and the new window you used
 
 The flows that are within 10% of my forecast for Week 1 are:
-      year  month  day  flow
-160    1989      6   10  58.0
-161    1989      6   11  53.0
-162    1989      6   12  57.0
-164    1989      6   14  57.0
-165    1989      6   15  60.0
-...     ...    ...  ...   ...
-11585  2020      9   20  52.6
-11586  2020      9   21  55.9
-11587  2020      9   22  60.0
-11590  2020      9   25  58.1
-11591  2020      9   26  55.7
+| index | Year | Month | Day | Flow |
+| ----- | ---- | ----- | --- | ---- |
+| 160   | 1989 | 6     | 10  | 58.0 |
+| 161   | 1989 | 6     | 11  | 53.0 |
+| 162   | 1989 | 6     | 12  | 57.0 |
+| 164   | 1989 | 6     | 14  | 57.0 |
+| 165   | 1989 | 6     | 15  | 60.0 |
+| ....  | ...  | ...   | ... | ...  |
+| 11585 | 2020 | 9     | 20  | 52.6 |
+| 11586 | 2020 | 9     | 21  | 55.9 |
+| 11587 | 2020 | 9     | 22  | 60.0 |
+| 11590 | 2020 | 9     | 25  | 58.1 |
+| 11591 | 2020 | 9     | 26  | 55.7 |
 
 [566 rows x 4 columns]
