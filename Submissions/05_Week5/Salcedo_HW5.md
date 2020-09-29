@@ -2,6 +2,11 @@
 ## *Name:* Camilo Salcedo
 ## *Date:* September 28th 2020
 ___
+## Grade
+3/3  - Great work!
+
+Note- See my changes below. I added an extra space before your first two tables to get them to format correctly.
+__
 
 # Forecast description
 
@@ -12,19 +17,22 @@ Using a plot to show the mean flows for the months of July, August and September
 The dataframe is composed by 4 columns: Year, Month, Day and Flow. The types of each column are float64. The summary of each column is described below:
 
 The column "Year" is composed as follows:
+
 | Count | 11592.000000 |
-| ----- | ------------ |
-|Mean | 2004.372671|
-|Std  |    9.162864|
-|Min  | 1989.000000|
-|25%  | 1996.000000|
-|50%  | 2004.000000|
-|75%  | 2012.000000|
-|Max  | 2020.000000|
-|Name |'year'|
-|dtype  |float64 |
+|:------|---------:|
+|  Mean | 2004.372671  |
+|  Std  |    9.162864 |
+|  Min  | 1989.000000 |
+| 25%  | 1996.000000 |
+| 50%  | 2004.000000 |
+|  75%  | 2012.000000 |
+| Max  | 2020.000000 |
+| Name |'year'|
+| dtype  |float64 |
 
  The column "Month" is composed as follows:
+ (LC - Note I added a line here to get your table to format)
+
 | Count | 11592.000000 |
 | ----- | ------------ |
  |Mean  |6.486542|
@@ -38,6 +46,8 @@ The column "Year" is composed as follows:
  |dtype |float64|
 
  The column "Day" is composed as follows:
+ (LC - Note I added a line here to get your table to format)
+
  | Count | 11592.000000 |
  | ----- | ------------ |
  |Mean  |15.724379|
@@ -62,6 +72,7 @@ min       19.000000
 50%      158.000000
 75%      216.000000
 max    63400.000000
+
 
 | Variable | Value        |
 | -------- | ------------ |
@@ -108,6 +119,8 @@ The top 5-highest flows are shown below:
 
 
  The top 5-lowest flows are shown below:
+ (LC - Note I added a line here to get your table to format)
+
  | index | Year | Month | Day | Flow    |
  | ----- | ---- | ----- | --- | ------- |
 |8584 | 2012 |     7 |   3|  23.4|
@@ -138,6 +151,8 @@ The lowest and highest flow values, with its corresponding year, are shown below
 ## 6. Provide a list of historical dates with flows that are within 10% of your week 1 forecast value. If there are none than increase the %10 window until you have at least one other value and report the date and the new window you used
 
 The flows that are within 10% of my forecast for Week 1 are:
+(LC - Note I added a line here to get your table to format)
+
 | index | Year | Month | Day | Flow |
 | ----- | ---- | ----- | --- | ---- |
 | 160   | 1989 | 6     | 10  | 58.0 |
