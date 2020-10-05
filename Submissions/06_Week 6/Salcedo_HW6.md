@@ -10,11 +10,11 @@ Using a plot to show the mean flows for the months of July, August and September
 # Assignment Questions
 ## 1. A summary of the AR model that you ended up building, including (1) what you are using as your prediction variables, (2) the final equation for your model and (3) what you used as your testing and training periods. In your discussion please include graphical outputs that support why you made the decisions you did with your model.
 The developed Auto-Regressive model includes 3 lags, representing an AR(3) model. The variables used for the prediction were Z(t-1), Z(t-2) and Z(t-3). Hence, the equation of the model is:
-Zt = intercept + Coef[0]*Z(t-1) + Coef[1]*Z(t-2)+Coef[2]*Z(t-3)
+Zt = 9.67 + 0.89Z(t-1) - 0.2Z(t-2) + 0.27Z(t-3)
 
 For the development of the model, a period between 25/08/2019 and 17/11/2019. The use of this training period was determined as a result of the analysis of behavior of the mean daily flow at each month between July and December along years. Hence, a similar year it was found that the most similar year in terms of the monthly average of flow was 2019. The corresponding box and whiskers plot, showing the mean value per year is shown below:
 
-![](assets/Salcedo_HW5-65906fb0.png)
+![](assets/Salcedo_HW6-65906fb0.png)
 
 ## 2. Provide an analysis of your final model performance. This should include at least one graph that shows the historical vs predicted streamflow and some discussion of qualitatively how you think your model is good or bad.
 
