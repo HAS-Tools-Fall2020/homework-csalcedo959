@@ -3,6 +3,9 @@
 ## *Date:* October 5th 2020
 ___
 
+### Grade
+3/3 - Good work. Note that the assignment asked for at least 3 plots though so make sure to add some more in for the next round. 
+___
 # Forecast description
 
 Using a plot to show the mean flows for the months of July, August and September at each year within the analysis period, it was determined which years had a similar behavior during those months historically. In this sense, the most similar year for the second semester of the year was 2019.  Hence, an Auto Regressive models was developed considering a training period of time between August 25 2019 and November 17.
