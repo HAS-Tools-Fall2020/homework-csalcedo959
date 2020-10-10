@@ -1,5 +1,4 @@
-# Starter code for week 6 illustrating how to build an AR model 
-# and plot it
+# Forecasting code for Week 7
 
 # %%
 # Import the modules we will use
@@ -11,17 +10,72 @@ from sklearn.linear_model import LinearRegression
 import datetime
 #note you may need to do pip install for sklearn
 
+#%% Functions
+
+""" Estimate the parameters of an Auto Regressive Model (AR)
+
+Parameters:
+----------
+df: Dataframe containing the flow information.
+initial_date: Initial date for the training period in format 'YYYY-MM-DD'.
+final_date: Final date for the training period in format 'YYYY-MM-DD'.
+time_shifts: Number of time shifts to consider in the AR model.
+
+Returns:
+---------
+model_intercept: The intercept of the AR Model
+model_coefficients: The coefficients of the AR Model (size=[time_shifts,1])
+r_sq: Determination Coefficient R2 of the AR Model
+"""
+def AR_model_estimate(df, initial_train_date, final_train_date, time_shifts):
+
+        # Define the type of model to use
+        model_LR = LinearRegression()
+
+        # Start the shift listing with the string 'Flow'
+        shift_list=['flow']
+
+        # Create additional columns to the dataframe to include desired time shifts
+        for i in range(1,time_shifts+1):
+                num_shift = 'flow_tm'+str(i)
+                df[num_shift]=df['flow'].shift(i)
+                shift_list.append(num_shift)
+
+        # Create a dataframe of training data including all columns of df
+        train_data = df[initial_train_date:final_train_date][shift_list]
+
+        # Create the dependent array for the AR model
+        y_data=train_data['flow']
+
+        # Create the set of independent variables for the AR Model.
+        x_data=train_data[shift_list[1:len(shift_list)]]
+
+        # Fit the corresponding AR Model
+        model_LR.fit(x_data,y_data)
+
+        # Save the results of the AR Model
+        r_sq = np.round(model_LR.score(x_data, y_data),4)
+        model_intercept=np.round(model_LR.intercept_, 2)
+        model_coefficients=np.round(model_LR.coef_,2)
+
+        # Print the results to the user
+        print('AR Model with ',time_shifts,' shifts')
+        print('coefficient of determination:', r_sq)
+        print('intercept:', model_intercept)
+        print('slope:',model_coefficients )
+
+        return model_intercept, model_coefficients, r_sq
+
 # %%
 # ** MODIFY **
 # Set the file name and path to where you have stored the data
-filename = 'streamflow_week6.txt'
+filename = 'streamflow_week7.txt'
 filepath = os.path.join('../../data', filename)
 print(os.getcwd())
 print(filepath)
 
-
 # %%
-#Read the data into a pandas dataframe
+# Read the data into a pandas dataframe
 data=pd.read_table(filepath, sep = '\t', skiprows=30,
         names=['agency_cd', 'site_no', 'datetime', 'flow', 'code'],
         parse_dates=['datetime']
@@ -33,212 +87,77 @@ data['month'] = pd.DatetimeIndex(data['datetime']).month
 data['day'] = pd.DatetimeIndex(data['datetime']).dayofweek
 data['dayofweek'] = pd.DatetimeIndex(data['datetime']).dayofweek
 
-# Aggregate flow values to weekly 
+# Aggregate flow values to weekly
 flow_weekly = data.resample("W", on='datetime').mean()
 
 # %%
-# Building an autoregressive model 
-# You can learn more about the approach I'm following by walking 
-# Through this tutorial
-# https://realpython.com/linear-regression-in-python/
+# Forecasts for Week 7
 
-# Step 1: setup the arrays you will build your model on
-# This is an autoregressive model so we will be building
-# it based on the lagged timeseries
+# Define the time shifts parameter
+time_shifts=3
 
-flow_weekly['flow_tm1'] = flow_weekly['flow'].shift(1)
-flow_weekly['flow_tm2'] = flow_weekly['flow'].shift(2)
+# Estimate the parameters for the best-fit AR Model
+model_intercept,model_coefficients, r_sq=AR_model_estimate(flow_weekly,\
+         '2019-08-25','2019-11-17',time_shifts)
 
-# Step 2 - pick what portion of the time series you want to use as training data
-# here I'm grabbing the first 800 weeks 
-# Note1 - dropping the first two weeks since they wont have lagged data
-# to go with them  
-train = flow_weekly[2:800][['flow', 'flow_tm1', 'flow_tm2']]
-test = flow_weekly[800:][['flow', 'flow_tm1', 'flow_tm2']]
+# Select the measured flow during a test period of time
+test=flow_weekly.loc['2019-08-25':'2020-10-31']['flow']
 
-# Step 3: Fit a linear regression model using sklearn 
-model = LinearRegression()
-x=train['flow_tm1'].values.reshape(-1,1) #See the tutorial to understand the reshape step here 
-y=train['flow'].values
-model.fit(x,y)
+# Create an array of zeros to save the flow data from Aug. 25/2019 to date
+forecasts=np.zeros(test.shape[0]+2)
 
-#Look at the results
-# r^2 values
-r_sq = model.score(x, y)
-print('coefficient of determination:', np.round(r_sq,2))
+# Save flow values between Aug. 21/2020 to date
+forecasts[0:test.shape[0]]=test.values
 
-#print the intercept and the slope 
-print('intercept:', np.round(model.intercept_, 2))
-print('slope:', np.round(model.coef_, 2))
+# Calculate the Forecasts for Week 1 and Week 2
 
-# Step 4 Make a prediction with your model 
-# Predict the model response for a  given flow value
-q_pred_train = model.predict(train['flow_tm1'].values.reshape(-1,1))
-q_pred_test = model.predict(test['flow_tm1'].values.reshape(-1,1))
+if time_shifts == 1:
+        for i in range(test.shape[0],test.shape[0]+2):
+                forecasts[i]=model_intercept + \
+                        model_coefficients[0]* forecasts[i-1]
+elif time_shifts == 2:
+        for i in range(test.shape[0],test.shape[0]+2):
+                forecasts[i]=model_intercept + \
+                         model_coefficients[0]* forecasts[i-1] \
+                        + model_coefficients[1]* forecasts[i-2]
+elif time_shifts == 3:
+        for i in range(test.shape[0],test.shape[0]+2):
+                forecasts[i]=model_intercept + \
+                         model_coefficients[0]* forecasts[i-1] \
+                          + model_coefficients[1]* forecasts[i-2]+\
+                                model_coefficients[2]*forecasts[i-3]
+elif time_shifts == 4:
+        for i in range(test.shape[0],test.shape[0]+2):
+                forecasts[i]=model_intercept + \
+                                model_coefficients[0]* forecasts[i-1] \
+                                + model_coefficients[1]* forecasts[i-2]+\
+                                model_coefficients[2]*forecasts[i-3]+\
+                                model_coefficients[3]*forecasts[i-4]
+else:
+        print('Please modify the code to include more time shifts')
 
-#altrenatievely you can calcualte this yourself like this: 
-q_pred = model.intercept_ + model.coef_ * train['flow_tm1']
+# Print the forecasts for the competition
+print('Dear Classmate, please submit these values to my CSV (The ones generated by AR Model):')
+print('Week # 1 (cfs): ',np.round(forecasts[forecasts.shape[0]-2],2))
+print('Week # 2 (cfs): ',np.round(forecasts[forecasts.shape[0]-1],2))
 
-# you could also predict the q for just a single value like this
-last_week_flow = 500
-prediction = model.intercept_ + model.coef_ * last_week_flow
+# %%
+# Plot the results
+# Time series of flow values with the x axis range limited
+fig, ax = plt.subplots()
+
+# Define x-axis for both arrays
+x1=np.linspace(1,forecasts.shape[0]-3,forecasts.shape[0]-3)
+x2=np.linspace(forecasts.shape[0]-2,forecasts.shape[0]-1,2)
+
+# Plot both time series (Historical and Forecasted)
+ax.plot(x1,forecasts[0:forecasts.shape[0]-3], label='Historical Data')
+ax.plot(x2,forecasts[forecasts.shape[0]-2:forecasts.shape[0]], 'r:', label='Forecasted')
+ax.set(title="Forecasted Flow", xlabel="Week", ylabel="Weekly Avg Flow [cfs]",
+        yscale='log') # xlim=[datetime.date(2019, 8, 25), datetime.date(2020, 10, 31)])
+ax.legend()
+
+plt.show()
 
 
 # %%
-# Another example but this time using two time lags as inputs to the model 
-model2 = LinearRegression()
-x2=train[['flow_tm1','flow_tm2']]
-model2.fit(x2,y)
-r_sq = model2.score(x2, y)
-print('coefficient of determination:', np.round(r_sq,2))
-print('intercept:', np.round(model2.intercept_, 2))
-print('slope:', np.round(model2.coef_, 2))
-
-# generate preditions with the funciton
-q_pred2_train = model2.predict(train[['flow_tm1', 'flow_tm2']])
-
-# or by hand
-q_pred2 = model2.intercept_   \
-         + model2.coef_[0]* train['flow_tm1'] \
-         +  model2.coef_[1]* train['flow_tm2'] 
-
-# %% 
-# Here are some examples of things you might want to plot to get you started:
-
-# 1. Timeseries of observed flow values
-# Note that date is the index for the dataframe so it will 
-# automatically treat this as our x axis unless we tell it otherwise
-fig, ax = plt.subplots()
-ax.plot(flow_weekly['flow'], label='full')
-ax.plot(train['flow'], 'r:', label='training')
-ax.set(title="Observed Flow", xlabel="Date", 
-        ylabel="Weekly Avg Flow [cfs]",
-        yscale='log')
-ax.legend()
-# an example of saving your figure to a file
-fig.set_size_inches(5,3)
-fig.savefig("Observed_Flow.png")
-
-#2. Time series of flow values with the x axis range limited
-fig, ax = plt.subplots()
-ax.plot(flow_weekly['flow'], label='full')
-ax.plot(train['flow'], 'r:', label='training')
-ax.set(title="Observed Flow", xlabel="Date", ylabel="Weekly Avg Flow [cfs]",
-        yscale='log', xlim=[datetime.date(2000, 1, 26), datetime.date(2014, 2, 1)])
-ax.legend()
-
-
-# 3. Line  plot comparison of predicted and observed flows
-fig, ax = plt.subplots()
-ax.plot(train['flow'], color='grey', linewidth=2, label='observed')
-ax.plot(train.index, q_pred_train, color='green', linestyle='--', 
-        label='simulated')
-ax.set(title="Observed Flow", xlabel="Date", ylabel="Weekly Avg Flow [cfs]",
-        yscale='log')
-ax.legend()
-
-# 4. Scatter plot of t vs t-1 flow with log log axes
-fig, ax = plt.subplots()
-ax.scatter(train['flow_tm1'], train['flow'], marker='p',
-              color='blueviolet', label='obs')
-ax.set(xlabel='flow t-1', ylabel='flow t', yscale='log', xscale='log')
-ax.plot(np.sort(train['flow_tm1']), np.sort(q_pred_train), label='AR model')
-ax.legend()
-
-# 5. Scatter plot of t vs t-1 flow with normal axes
-fig, ax = plt.subplots()
-ax.scatter(train['flow_tm1'], train['flow'], marker='p',
-              color='blueviolet', label='observations')
-ax.set(xlabel='flow t-1', ylabel='flow t')
-ax.plot(np.sort(train['flow_tm1']), np.sort(q_pred_train), label='AR model')
-ax.legend()
-
-plt.show()
-
-
-# %% Forecasts for Week 6
-
-#Data Analysis
-flow_monthly = data.resample("M", on='datetime').mean() #Creation of a monthly dataframe
-months=['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov','Dec']
-
-
-#Plot creation
-fig, axes=plt.subplots(nrows=3,ncols=2, sharex=False)
-axes=axes.flatten()
-
-for i in range(7,13,1):
-        monthlyData=data[data.month==i]
-        monthlyData.boxplot(column=['flow'],by=['year'], showfliers=False, showmeans=True, meanprops={'marker':'s','markerfacecolor':'orange', 'markersize':2,'markeredgecolor':'black'},meanline=False, ax=axes[i-7])
-        axes[i-7].set_title(months[i-1],size=8)
-        axes[i-7].set_xlabel('Year',size=7)
-        axes[i-7].set_ylabel('Mean Flow',size=7)
-        axes[i-7].set_ylim(0,500)
-        axes[i-7].tick_params(axis='x',labelsize=5,rotation=90)
-        axes[i-7].tick_params(axis='y',labelsize=5)
-
-fig.suptitle('Anual Variation for Daily Flow')        
-fig.subplots_adjust(hspace=0.5)
-
-for ax in axes:
-        ax.label_outer()
-        
-for axi in axes.flat:
-    #axi.xaxis.set_major_locator(plt.MaxNLocator(10))
-    axi.yaxis.set_major_locator(plt.MaxNLocator(5))
-plt.show()
-fig.savefig('initial.png')
-
-# %% Forecasts Week 6
-
-#Model with 3 lags 
-model3 = LinearRegression()
-
-#Shifts
-flow_weekly['flow_tm1'] = flow_weekly['flow'].shift(1)
-flow_weekly['flow_tm2'] = flow_weekly['flow'].shift(2)
-flow_weekly['flow_tm3'] = flow_weekly['flow'].shift(3)
-
-train = flow_weekly[1599:1612][['flow', 'flow_tm1', 'flow_tm2','flow_tm3']]
-test = flow_weekly[1599:1612][['flow', 'flow_tm1', 'flow_tm2','flow_tm3']]
-y=train['flow']
-#1599:1612
-
-x3=train[['flow_tm1','flow_tm2','flow_tm3']]
-model3.fit(x3,y)
-r_sq = model3.score(x3, y)
-print('coefficient of determination:', np.round(r_sq,4))
-print('intercept:', np.round(model3.intercept_, 2))
-print('slope:', np.round(model3.coef_,2))
-
-# generate forecasts
-
-#Seasonal
-forecasts=np.zeros(69).reshape(-1,1)
-
-for i in range(0,52):
-        forecasts[i,0]=flow_weekly.iloc[1599+i]['flow']
-
-for i in range(52,69):
-        forecasts[i,0]=model3.intercept_+ model3.coef_[0]* forecasts[i-1] \
-        +  model3.coef_[1]* forecasts[i-2]  +model3.coef_[2]*forecasts[i-3]
-
-
-# 4. Scatter plot of t vs t-1 flow with log log axes
-train = flow_weekly[1599:1612][['flow', 'flow_tm1', 'flow_tm2','flow_tm3']]
-
-fig, ax = plt.subplots(nrows=1,ncols=3)
-ax[0].scatter(train['flow_tm1'], train['flow'], marker='p',
-              color='blueviolet', label='obs')
-ax[0].set(xlabel='flow t-1', ylabel='flow t', yscale='log', xscale='log')
-ax[0].legend()
-ax[1].scatter(train['flow_tm2'], train['flow'], marker='p',
-              color='blueviolet', label='obs')
-ax[1].set(xlabel='flow t-2', ylabel='flow t', yscale='log', xscale='log')
-ax[1].legend()
-ax[2].scatter(train['flow_tm3'], train['flow'], marker='p',
-              color='blueviolet', label='obs')
-ax[2].set(xlabel='flow t-3', ylabel='flow t', yscale='log', xscale='log')
-ax[2].legend()
-plt.show
-
