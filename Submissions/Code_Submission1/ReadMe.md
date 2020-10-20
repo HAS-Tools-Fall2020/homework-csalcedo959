@@ -3,6 +3,15 @@
 ## *Name:* Camilo Salcedo
 ## *Date:* October 19th 2020
 ___
+#### Grade 
+ - 6/6  Great  job!
+ - Readability: 3
+ - Style: 3 
+ - Code: 2
+
+ - Really cool that you made a function that calls another function! 
+ - Also great job having a function with multiple returns. 
+ - I made a suggestion to shorten your function
 
 ### 1. A brief summary of the AR model you built and why. Use whatever graphs you find helpful.
 For this week, I used two AR models of order 3 to perform the forecasts. Despite the training periods for the models were almost the same, the sampling time for the used data was different: For the weekly forecast, a daily flow data was considered, meanwhile a weekly flow data was considered for seasonal forecast.

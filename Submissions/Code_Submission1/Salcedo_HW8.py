@@ -11,7 +11,7 @@ import datetime as dt
 from matplotlib.dates import DateFormatter
 
 # %% Functions
-
+# LC - nice documenation!
 """ Estimate the parameters of an Auto Regressive Model (AR)
 
 Parameters:
@@ -130,6 +130,10 @@ def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,
     # Using a nested conditional, the forecasts are calculated between \
     # the desired range of dates, and then appended to the dataframe
 
+    # LC - You could actually condense this significantly by just multiplying all 
+    # of the model coeficients by the flow values all at once.  Then you wouldn't
+    # need the if statements
+
     if time_shifts == 1:
         for i in range(0, forecast_period.shape[0]):
             forecast_val = model_intercept + model_coefficients[0] * \
@@ -225,6 +229,7 @@ start_train_date = '2019-08-25'
 end_train_date = '2019-11-17'
 
 # Forecasting period
+# LC - Nice  job defining these as  variables. Next time try putting them up top
 start_for_date = '2020-10-18'
 end_for_date = '2020-10-31'
 
