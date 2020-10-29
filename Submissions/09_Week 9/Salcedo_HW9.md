@@ -2,6 +2,9 @@
 ## *Name:* Camilo Salcedo
 ## *Date:* October 26th 2020
 ___
+## Grade
+3/3 - great job! Nice unique choice of dataset. 
+___
 ### 1. A brief summary of the how you chose to generate your forecast this week.
 For this week, I tried to incorporate two new datasets: Temperature and Relative Humidity, measured at Sedona's Airport and available at Mesonet. The selection of this location was because it was closer to the upstream area of Verde River's basin.
 
