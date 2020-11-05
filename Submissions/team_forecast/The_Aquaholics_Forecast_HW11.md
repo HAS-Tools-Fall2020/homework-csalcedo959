@@ -31,3 +31,5 @@ The one and two week forecast streamflow values for your teams.
 >### **Summary :octocat:**
 
 - A summary of your forecast. This should be written as a narrative summary without any blocks of code. It should summarize the inputs and approach used and must include at least 1 map and one graph. Only include graphs that you talk about in your narrative.
+
+Picture of map here
