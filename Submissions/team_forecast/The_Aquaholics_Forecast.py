@@ -137,47 +137,20 @@ def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,
     # forecast.
     lag_i = index_lag1+1
 
-    # Using a nested conditional, the forecasts are calculated between \
+    # Initialize the variable for the forecasts
+    forecast_val = 0
+
+    # Using two loops, the forecasts are calculated between \
     # the desired range of dates, and then appended to the dataframe
 
-    if time_shifts == 1:
-        for i in range(0, forecast_period.shape[0]):
-            forecast_val = model_intercept + model_coefficients[0] * \
-                flow_daily.iloc[lag_i - 1]['flow']
-            lag_i += 1  # Update the counter
-            flow_daily.loc[forecast_period[i], ['flow']] = forecast_val
-    elif time_shifts == 2:
-        for i in range(0, forecast_period.shape[0]):
-            forecast_val = model_intercept + model_coefficients[0] * \
-                flow_daily.iloc[lag_i - 1]['flow'] + \
-                model_coefficients[1] * \
-                flow_daily.iloc[lag_i - 2]['flow']
-            lag_i += 1  # Update the counter
-            flow_daily.loc[forecast_period[i], ['flow']] = forecast_val
-    elif time_shifts == 3:
-        for i in range(0, forecast_period.shape[0]):
-            forecast_val = model_intercept + model_coefficients[0] * \
-                flow_daily.iloc[lag_i - 1]['flow'] + \
-                model_coefficients[1] * \
-                flow_daily.iloc[lag_i - 2]['flow'] + \
-                model_coefficients[2] * \
-                flow_daily.iloc[lag_i - 3]['flow']
-            lag_i += 1  # Update the counter
-            flow_daily.loc[forecast_period[i], ['flow']] = forecast_val
-    elif time_shifts == 4:
-        for i in range(0, forecast_period.shape[0]):
-            forecast_val = model_intercept + model_coefficients[0] * \
-                flow_daily.iloc[lag_i - 1]['flow'] + \
-                model_coefficients[1] * \
-                flow_daily.iloc[lag_i - 2]['flow'] + \
-                model_coefficients[2] * \
-                flow_daily.iloc[lag_i - 3]['flow'] + \
-                model_coefficients[3] * \
-                flow_daily.iloc[lag_i - 4]['flow']
-            lag_i += 1  # Update the counter
-            flow_daily.loc[forecast_period[i], ['flow']] = forecast_val
-    else:
-        print('Please modify the code to include more time shifts')
+    for i in range(0, forecast_period.shape[0]):
+        for k in range(0, time_shifts):
+            forecast_val += model_coefficients[k] * \
+                flow_daily.iloc[lag_i-(k+1)]['flow']
+        forecast_val += model_intercept
+        lag_i += 1
+        flow_daily.loc[forecast_period[i], ['flow']] = forecast_val
+        forecast_val = 0
 
     # Resampling the forecast in a weekly basis, starting on Sundays and \
     # setting the labels and closed interval at the left
@@ -279,7 +252,7 @@ end_for_date = '2020-12-12'
 time_shifts = 3
 
 # Common dataframe for both forecasts including only the flow column
-daily_flow_16w = stream_data.loc['1989-01-01':start_for_date][['flow']]
+daily_flow_16w = flow_daily_seas.loc['1989-01-01':start_for_date][['flow']]
 
 # Function Call
 flow_daily_seas, flow_weekly_seas, model_intercept16, model_coefficients16 = \
