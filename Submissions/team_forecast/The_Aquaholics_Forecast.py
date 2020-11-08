@@ -175,9 +175,10 @@ def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,
 # URL Variables
 site = '09506000'
 start = '2009-03-02'  # Adjusted according to information availability
-end = '2020-11-04'
-url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb&site_no=" + site + \
-      "&referred_module=sw&period=&begin_date=" + start + "&end_date=" + end
+end = '2020-11-06'
+url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb&site_no=" +\
+       site + "&referred_module=sw&period=&begin_date=" + start + "&end_date="\
+       + end
 
 stream_data = pd.read_table(url, skiprows=30, names=['agency_cd', 'site_no',
                                                      'datetime', 'flow', 'code'],

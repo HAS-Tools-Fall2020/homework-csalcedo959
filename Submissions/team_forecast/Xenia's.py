@@ -14,6 +14,12 @@ from yellowbrick.datasets import load_concrete
 from yellowbrick.regressor import ResidualsPlot
 
 # %%
+# regression equations
+plt.text(65, 230, 'y={:.2f}+{:.2f}*x'.format(male_fit[1], male_fit[0]), color='darkblue', size=12)
+plt.text(70, 130, 'y={:.2f}+{:.2f}*x'.format(female_fit[1], female_fit[0]), color='deeppink', size=12)
+
+
+# %%
 # Residuals Plot (Trying new things)
 
 # The residuals plot shows how the model is injecting error, the bold \
@@ -38,6 +44,38 @@ plt.show()
 fig.set_size_inches(7, 5)
 plt.savefig("6._Residuals_Plot.png")
 fig.savefig("6._Residuals_Plot.png")
+
+# %%
+# %%
+# Correlation of the Temperature data with the flow data
+correl_temp = round(union['flow'].corr(union['Temperature']), 2)
+# Correlation of the Precipitation data with the flow data
+print('Correlation with Temperature:', correl_temp)
+correl_precip = round(union['flow'].corr(union['Precipitation']), 2)
+print('Correlation with Precipitation:', correl_precip)
+
+
+def correlation ():
+
+correl_variables = [correl_temp, correl_precip]
+for i in correl_variables:
+    if i == correl_temp:
+        j = 'Temperature'
+    elif i == correl_precip:
+        j = 'Precipitation'
+    if abs(i) >= 0.4:
+        print('Strong correlation with', j)
+    elif 0.2 < abs(i) < 0.4:
+        print('Moderate correlation with', j)
+    elif abs(i) < 0.2:
+        print('Weak correlation with', j)
+
+
+
+
+
+
+
 
 
 # %%
