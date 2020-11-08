@@ -67,7 +67,7 @@ def AR_model_estimate(df, initial_train_date, final_train_date, time_shifts):
     print('intercept:', model_intercept)
     print('slope:', model_coefficients)
 
-    return model_intercept, model_coefficients, r_sq
+    return model_intercept, model_coefficients, r_sq, x_data, y_data
 
 
 def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,

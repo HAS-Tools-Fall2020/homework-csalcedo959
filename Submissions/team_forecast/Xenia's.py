@@ -5,20 +5,134 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+import urllib.request as req
+import urllib
 import fiona
 import contextily as ctx
 from shapely.geometry import Point
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from yellowbrick.datasets import load_concrete
 from yellowbrick.regressor import ResidualsPlot
+from yellowbrick.features import Rank2D
 
 # %%
-# regression equations
+# NOTE examples of how to put regression equations on the plots:
 plt.text(65, 230, 'y={:.2f}+{:.2f}*x'.format(male_fit[1], male_fit[0]), color='darkblue', size=12)
 plt.text(70, 130, 'y={:.2f}+{:.2f}*x'.format(female_fit[1], female_fit[0]), color='deeppink', size=12)
+line = f'Regression line: y={intercept:.2f}+{slope:.2f}x, r={r:.2f}'
+
+# %%
+# Function for Mesowest Temperature & Precipitation data
 
 
+def prec_temp_data(end_date):
+
+    """ Obtaining Precipitation and Air Temperature from the Mesowest website.
+
+
+    Parameters
+    ----------
+    end_date : updated date, to obtain the latest values.
+
+    Returns
+    ------
+    data_Meso : dataframe with precipitation and temperature per hour
+    data_Meso_D : dataframe with the means of precipitation and temperature \
+                  per day
+    data_Meso_W : dataframe with the means of precipitation and temperature \
+                  per week
+
+    """
+
+    # This is the base url that will be the start our final url
+    base_url = "http://api.mesowest.net/v2/stations/timeseries"
+
+    # Specific arguments for the data that we want
+    args = {
+            'start': '199701010000',
+            'end': end_date,
+            'obtimezone': 'UTC',
+            'vars': 'air_temp,precip_accum',
+            'stids': 'QVDA3',
+            'units': 'temp|C,precip|mm',
+            'token': 'demotoken'}
+
+    # Takes your arguments and paste them together into a string for the api
+    apiString = urllib.parse.urlencode(args)
+
+    # add the API string to the base_url
+    fullUrl = base_url + '?' + apiString
+    print('The Mesowest data is obtained from: ', fullUrl)
+
+    # Request the data
+    response = req.urlopen(fullUrl)
+
+    # What we need to do now is read this data. The complete format of this:
+    responseDict = json.loads(response.read())
+
+    # Create a dictionary. Keys shows the main elements of it.
+    responseDict.keys()
+
+    # Get the data we want:
+    dateTime = responseDict['STATION'][0]['OBSERVATIONS']['date_time']
+    airT = responseDict['STATION'][0]['OBSERVATIONS']['air_temp_set_1']
+    precip = responseDict['STATION'][0]['OBSERVATIONS']['precip_accum_set_1']
+
+    # Creating the pandas dataframe
+    data_Meso = pd.DataFrame({'Temperature': airT, 'Precipitation': precip},
+                             index=pd.to_datetime(dateTime))
+    data_Meso_D = data_Meso.resample('D').mean().round(2)
+    data_Meso_W = data_Meso.resample('W-SUN').mean().round(2)
+
+    return data_Meso, data_Meso_D, data_Meso_W
+
+
+# %%
+end_date = '202011070000'
+# Calling the function to get Precipitation and Temperature data from Mesowest
+data_Meso, data_Meso_D, data_Meso_W = prec_temp_data(end_date)
+# Printing my dataframe to know it
+data_Meso_D
+
+# %%
+# New Plots with Temperature & Precipitation
+
+fig, ax = plt.subplots()
+ax.plot(flow_weekly['flow'], label='Streamflow', color='black', linewidth=1)
+ax.plot(data_Meso_W['Precipitation'], 'r:', label='Precipitation',
+        color='aqua', linestyle='-', alpha=1, linewidth=2)
+ax.plot(data_Meso_W['Temperature'], 'r:', label='Temperature', color='red',
+        linestyle='-', alpha=1, linewidth=1)
+ax.set(title="2018-2021 data", xlabel="Date", ylabel="Weekly Avg values",
+       yscale='log', xlim=[datetime.date(2018, 8, 24),
+                           datetime.date(2021, 1, 15)])
+ax.legend()
+fig.set_size_inches(7, 5)
+fig.savefig("2018-2021_Data.png")
+
+# %%
+# NOTE Review this: Calling x_data & y_data from function to plot them
+x_data = AR_model_estimate(daily_flow, start_train_date,
+                           end_train_date, time_shifts)
+y_data = AR_model_estimate(daily_flow, start_train_date,
+                           end_train_date, time_shifts)
+
+# %%
+# NOTE review x_data & y_data. Scatter plot of t vs t-1 flow with normal axes
+fig, ax = plt.subplots()
+ax.scatter(x_data, y_data, marker='.',
+           color='purple', label='observations')
+ax.set(title="5. Autoregression Model", xlabel='flow t-1', ylabel='flow t',
+       xlim=[0, 175], ylim=[0, 175])
+ax.plot(np.sort(x_data), np.sort(y_data), label='AR model',
+        color='aqua', linewidth=3)
+ax.legend()
+
+# Xenia: Saving my plots
+fig.set_size_inches(7, 5)
+fig.savefig("5._Autoregression_Model.png")
+
+# %%
 # %%
 # Residuals Plot (Trying new things)
 
@@ -27,246 +141,39 @@ plt.text(70, 130, 'y={:.2f}+{:.2f}*x'.format(female_fit[1], female_fit[0]), colo
 # that line, indicates the magnitude of error.
 # (https://www.scikit-yb.org/en/latest/quickstart.html#installation)
 
-# Load a regression dataset
-X, y = load_concrete()
+# %%
+# Adding timezone = UTC to the flow data, to join the Mesowest data after
+daily_flow.index = daily_flow.index.tz_localize(tz="UTC")
+
+# Merge the USGS data (flow) with the Mesowest data (precip. and temp.)
+union = daily_flow['flow'].join(data_Meso_D[['Precipitation'], ['Temperature']])
+
+# Rank2D Pearson Correlation
+visualizer = Rank2D(algorithm="pearson")
+visualizer.fit_transform(union)
+visualizer.show()
 
 # %%
-# Create training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
-
-visualizer = ResidualsPlot(LinearRegression())
-visualizer.fit(X_train, y_train)  # Fit the training data to the visualizer
-visualizer.score(X_test, y_test)  # Evaluate the model on the test data
-visualizer.show()                 # Finalize and render the figure
+# NOTE still working on this too. Correlation Matrix
+corr_matrix = np.corrcoef(union).round(decimals=5)
+fig, ax = plt.subplots()
+im = ax.imshow(corr_matrix)
+im.set_clim(-1, 1)
+ax.grid(False)
+ax.xaxis.set(ticks=(0, 1, 2), ticklabels=('Precipitation', 'flow', 'Temperature'))
+ax.yaxis.set(ticks=(0, 1, 2), ticklabels=('Precipitation', 'flow', 'Temperature'))
+ax.set_ylim(2.5, -2.5)
+for i in range(3):
+    for j in range(3):
+        ax.text(j, i, corr_matrix[i, j], ha='center', va='center',
+                color='r')
+cbar = ax.figure.colorbar(im, ax=ax, format='% .2f')
+plt.show()
 
 # Xenia: Saving my plots
 plt.show()
 fig.set_size_inches(7, 5)
-plt.savefig("6._Residuals_Plot.png")
-fig.savefig("6._Residuals_Plot.png")
-
-# %%
-# %%
-# Correlation of the Temperature data with the flow data
-correl_temp = round(union['flow'].corr(union['Temperature']), 2)
-# Correlation of the Precipitation data with the flow data
-print('Correlation with Temperature:', correl_temp)
-correl_precip = round(union['flow'].corr(union['Precipitation']), 2)
-print('Correlation with Precipitation:', correl_precip)
-
-
-def correlation ():
-
-correl_variables = [correl_temp, correl_precip]
-for i in correl_variables:
-    if i == correl_temp:
-        j = 'Temperature'
-    elif i == correl_precip:
-        j = 'Precipitation'
-    if abs(i) >= 0.4:
-        print('Strong correlation with', j)
-    elif 0.2 < abs(i) < 0.4:
-        print('Moderate correlation with', j)
-    elif abs(i) < 0.2:
-        print('Weak correlation with', j)
-
-
-
-
-
-
-
-
-
-# %%
-# Gauges II USGS stream gauge dataset:
-# Link used: https://water.usgs.gov/GIS/dsdl/gagesII_9322_point_shapefile.zip
-# Reading it using geopandas
-file = os.path.join('../data/gagesII_9322_point_shapefile',
-                    'gagesII_9322_sept30_2011.shp')
-gages = gpd.read_file(file)
-
-# The variable "file" will automatically join the address of your shapefile.
-print('The current work directory is:')
-print(os.getcwd())
-print()
-print('The data is storaged at:')
-print(file)
-print()
-
-# This shows if the path exists or not, to check if there is any problem
-# finding the data. "True" means it's ok. "False" means there is a problem.
-print('Is everything ok with the path to start working now?')
-os.path.exists(file)
-
-# %%
-# Now lets make a map!
-fig, ax = plt.subplots(figsize=(5, 5))
-gages.plot(ax=ax)
-plt.show()
-
-# Zoom  in and just look at AZ
-gages.columns
-gages.STATE.unique()
-gages_AZ = gages[gages['STATE'] == 'AZ']
-gages_AZ.shape
-
-# More advanced plot of AZ gages - color by attribute
-fig, ax = plt.subplots(figsize=(5, 5))
-gages_AZ.plot(column='DRAIN_SQKM', categorical=False,
-              legend=True, markersize=45, cmap='OrRd',
-              ax=ax)
-ax.set_title("Arizona stream gauge drainge area\n (sq km)")
-plt.show()
-
-# %%
-# Adding more datasets
-# https://www.usgs.gov/core-science-systems/ngp/national-hydrography/\
-
-# HUC means: Hydrologic Unit Code
-# Reading in a geodataframe
-# Watershed boundaries for the lower Colorado. Polygon layer.
-file = os.path.join('../data/WBD_15_HU2_GDB', 'WBD_15_HU2_GDB.gdb')
-os.path.exists(file)
-fiona.listlayers(file)
-HUC6 = gpd.read_file(file, layer="WBDHU6")
-
-# Looking at the dataset
-HUC6.head()
-
-# plot the new layer we got:
-fig, ax = plt.subplots(figsize=(5, 5))
-HUC6.plot(ax=ax)
-ax.set_title("HUC Boundaries")
-plt.show()
-
-# Showing the Coordinate Reference System
-HUC6.crs
-
-# %%
-# Add some points
-# UofA:  32.22877495, -110.97688412
-# Verde River Stream gauge:  34.44833333, -111.7891667
-point_list = np.array([[-110.97688412, 32.22877495],
-                       [-111.7891667, 34.44833333]])
-
-# make these into spatial features
-point_geom = [Point(xy) for xy in point_list]
-point_geom
-
-# mape a dataframe of these points
-point_df = gpd.GeoDataFrame(point_geom, columns=['geometry'],
-                            crs=HUC6.crs)
-
-# plot these on the first dataset
-# Then we can plot just one layer at a time
-fig, ax = plt.subplots(figsize=(5, 5))
-HUC6.plot(ax=ax)
-point_df.plot(ax=ax, color='red', marker='x', markersize=50)
-ax.set_title("HUC Boundaries")
-plt.show()
-
-# %%
-# Xenia
-# From:https://www.epa.gov/eco-research/ecoregion-download-files-state-region-9
-
-# Ecoregions of Arizona. Polygon layer.
-file = os.path.join('../data/az_eco_l3', 'az_eco_l3.shp')
-os.path.exists(file)
-fiona.listlayers(file)
-eco_AZ = gpd.read_file(file, layer="az_eco_l3")
-
-# Looking at the dataset
-eco_AZ.head()
-
-# More advanced - color by attribute
-fig, ax = plt.subplots(figsize=(5, 5))
-eco_AZ.plot(column='NA_L2NAME', categorical=True, legend=True, cmap='YlGn',
-            ax=ax)
-ax.set_title("Ecoregions of Arizona")
-plt.show()
-
-# %%
-# Xenia
-# From: https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=arizona
-
-# Temperatures of Arizona. Point layer.
-file = os.path.join('../data/S_USA.NorWeST_TemperaturePoints.gdb',
-                    'S_USA.NorWeST_TemperaturePoints.gdb')
-os.path.exists(file)
-fiona.listlayers(file)
-temp_AZ = gpd.read_file(file, layer="NorWeST_TemperaturePoints")
-
-# Looking at the dataset
-temp_AZ.head()
-
-# More advanced - color by attribute
-fig, ax = plt.subplots(figsize=(5, 5))
-temp_AZ.plot(categorical=True, legend=True, cmap='RdYlBu', ax=ax)
-ax.set_title("Temperatures of Arizona")
-plt.show()
-
-# %%
-# Xenia
-# From: http://repository.azgs.az.gov/category/thematic-keywords/geodatabase
-
-# Wildfires of Arizona. Point layer.
-file = os.path.join('../data/azwildfires_di44_v1.gdb_',
-                    'AZWildfires_DI44_v1.gdb')
-os.path.exists(file)
-fiona.listlayers(file)
-fires_AZ = gpd.read_file(file, layer="RainGages_AZFires")
-
-# Looking at the dataset
-fires_AZ.head()
-
-# More advanced - color by attribute
-fig, ax = plt.subplots(figsize=(5, 5))
-fires_AZ.plot(categorical=True, legend=True, cmap='OrRd', ax=ax)
-ax.set_title("Wildfires of Arizona")
-plt.show()
-
-# %%
-# Changing all the layers to the same CRS as "Gages" layer.
-points_project = point_df.to_crs(gages_AZ.crs)
-eco_AZ_project = eco_AZ.to_crs(gages_AZ.crs)
-temp_AZ_project = temp_AZ.to_crs(gages_AZ.crs)
-fires_AZ_project = fires_AZ.to_crs(gages_AZ.crs)
-HUC6_project = HUC6.to_crs(gages_AZ.crs)
-
-# NOTE: .to_crs() will only work if your original spatial object has a CRS \
-# assigned to it AND if that CRS is the correct CRS!
-
-# %%
-# Putting everything on the same plot:
-
-# Now plot
-# Adding each layer to the map
-fig, ax = plt.subplots(figsize=(10, 5))
-eco_AZ_project.plot(column='NA_L2NAME', categorical=True, legend=True,
-                    label='Ecoregions', cmap='YlGn', ax=ax)
-gages_AZ.plot(categorical=False, legend=True,
-              label='Stream Gages', markersize=15, cmap='ocean', ax=ax)
-temp_AZ_project.plot(categorical=False, legend=True, markersize=15, marker='>',
-                     cmap='RdYlBu', ax=ax, label='Temperature')
-fires_AZ_project.plot(categorical=False, legend=True, marker='^',
-                      markersize=80, cmap='Reds', ax=ax, label='Wildfires')
-points_project.plot(ax=ax, legend=True, label='Points of interest',
-                    color='red', marker='x', markersize=80, linewidth=2)
-HUC6_project.boundary.plot(ax=ax, color=None, edgecolor='black', linewidth=0.5)
-
-# Making zoom to the bounds of the prefered layer. In this case Eco-regions.
-xlim = ([eco_AZ_project.total_bounds[0],  eco_AZ_project.total_bounds[2]])
-ylim = ([eco_AZ_project.total_bounds[1],  eco_AZ_project.total_bounds[3]])
-ax.set_xlim(xlim)
-ax.set_ylim(ylim)
-ax.set(title='Flow Gages, Ecoregions, Temperature \n Arizona State',
-       xlabel='Longitude', ylabel='Latitude')
-
-# Show the legend
-ax.legend()
-
-# Show the plot
-plt.show()
+plt.savefig("3._Correlation_Plot.png")
+fig.savefig("3._Correlation_Plot.png")
 
 # %%
