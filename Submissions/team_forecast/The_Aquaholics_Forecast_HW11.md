@@ -3,7 +3,7 @@
 #### (The best ones! :sunglasses: )
 
 ### Team Members:  *Diana, Danielle, Camilo & Xenia*.
-### Date: *November, 2020*.
+### Date: *November 9, 2020*.
 
 ---
 
@@ -28,13 +28,13 @@ The one and two week forecast streamflow values for your teams.
 
 Camilo brought his wonderful, working autoregressive model and improved the functions as well as the seasonal forecast to make a better, more compact script.  
 
-Diana made a fantastic map of our watershed, incorporating shape shape files from various sources that were agreed to by the group.
+Diana made a fantastic map of our watershed, incorporating shape files from various sources that were agreed to by the group.
 
 Xenia made the template for this markdown and made the plots of the correlation matrix and of data from Mesowest against streamflow.
 
-Danielle moved the functions into another python script and made sure they were read in properly.  Too easy, so she also wrote the words for this markdown.
+Danielle moved the functions into another python script and made sure they were read in properly. Too easy, so she also wrote the words for this markdown.
 
-We made copies of Camilo's original code and discussed changes on a discord server created by Camilo.  We also coordinated on Discord whenever we were making changes to the main python script or any other files and about to push to Camilo's repo (the main repo).  Our plan and task division was determined Thursday during class and everyone worked together marvelously.
+We made copies of Camilo's original code and discussed changes on a discord server created by Camilo. We also coordinated on Discord whenever we were making changes to the main python script or any other files and about to push to Camilo's repo (the main repo). Our plan and task division was determined Thursday during class and everyone worked together marvelously.
 
 10/10, would work with them again.
 
@@ -44,9 +44,9 @@ We made copies of Camilo's original code and discussed changes on a discord serv
 
 - A summary of your forecast. This should be written as a narrative summary without any blocks of code. It should summarize the inputs and approach used and must include at least 1 map and one graph. Only include graphs that you talk about in your narrative.
 
-We compared precipitation and temperature from Meso West with streamflow and discovered streamflow increased when temperature decreased, and vice versa when precipitation increased (Fig. 2).  However, after computing the R^2, we discovered that both variables are very poor for predicting streamflow (Fig. 3).  We believe this could be because there are external factors affecting streamflow in our watershed, which can be seen in the map (Fig. 1).  
+We compared precipitation and temperature from Mesowest with streamflow and discovered streamflow increased when temperature decreased, and vice versa when precipitation increased (Fig. 2).  However, after computing the R^2, we discovered that both variables are very poor for predicting streamflow (Fig. 3).  We believe this could be because there are external factors affecting streamflow in our watershed, which can be seen in the map (Fig. 1).  
 
-Thus, for our team forcast we decided to go with an autoregressive model originally developed by Camilo, which has an excellent R^2 using only 3 time shifts (Table 1).  We believe there are two key factors with our model that produced such high coefficients of determination: 1) not aggregating to weekly and 2) using a certain training period.  The training periods were previously tested by Camilo, who selected them based upon flow patterns. at different years.
+Thus, for our team forecast we decided to go with an autoregressive model originally developed by Camilo, which has an excellent R^2 using only 3 time shifts (Table 1).  We believe there are two key factors with our model that produced such high coefficients of determination: 1) not aggregating to weekly and 2) using a certain training period.  The training periods were previously tested by Camilo, who selected them based upon flow patterns. at different years.
 
 **Table 1.** AR model coefficients of determination and their training periods using 3 time shifts
 
@@ -57,7 +57,7 @@ Thus, for our team forcast we decided to go with an autoregressive model origina
 |Seasonal - Remaining weeks|2019-10-30|2019-11-30|0.9338|
 
 **Figure 1.** Map of Verde Watershed
-Picture of map here
+![](assets/Verde_River_Watershed.png)
 
 **Figure 2.** Mesowest meteorological  data plotted with USGS stream gauge data
 ![](assets/The_Aquaholics_Forecast_HW11-eacba21e.png)
