@@ -55,7 +55,7 @@ Thus, for our team forecast we decided to go with an autoregressive model origin
 | ------ | ----------------- | --------------- | -- |
 |1 and 2 week|2009-10-01|2009-11-30|0.9769|
 |Seasonal - 1st 10 weeks|2019-08-25|2019-11-10|0.6546|
-|Seasonal - Remaining weeks|2019-10-30|2019-11-30|0.9338|
+|Seasonal - Remaining weeks|2009-10-01|2009-11-30|0.9338|
 
 **Figure 1.** Map of Verde Watershed
 
