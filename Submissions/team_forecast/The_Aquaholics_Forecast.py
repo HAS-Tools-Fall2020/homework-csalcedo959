@@ -5,17 +5,10 @@
 # %%
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime as dt
 import os
-import json
-import urllib.request as req
-import urllib
 import teamfns as tf
-from sklearn.linear_model import LinearRegression
-from matplotlib.dates import DateFormatter
 import seaborn as sn
 from PIL import Image
-import matplotlib as mpl
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import Point
@@ -160,9 +153,12 @@ plt.savefig("Correlation_Matrix.png")
 
 # Code for the image, NOTE: Please see the last line of code to display the
 # image if you do not want to download everything below.
-# Gages: https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
-# Rivers and Watersheds: http://uair.library.arizona.edu/item/292543/browse-data/Water?page=1
-# HUC 4: https://www.sciencebase.gov/catalog/item/5a96cda0e4b06990606c4d0f
+# Gages:
+# - https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
+# Rivers and Watersheds:
+# - http://uair.library.arizona.edu/item/292543/browse-data/Water?page=1
+# HUC 4:
+# - https://www.sciencebase.gov/catalog/item/5a96cda0e4b06990606c4d0f
 
 file = os.path.join('data-nongit', 'gagesII_9322_sept30_2011.shp')
 gages = gpd.read_file(file)
