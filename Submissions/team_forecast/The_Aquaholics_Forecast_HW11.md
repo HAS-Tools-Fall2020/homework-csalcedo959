@@ -33,3 +33,9 @@ The one and two week forecast streamflow values for your teams.
 - A summary of your forecast. This should be written as a narrative summary without any blocks of code. It should summarize the inputs and approach used and must include at least 1 map and one graph. Only include graphs that you talk about in your narrative.
 
 Picture of map here
+
+Data graph
+![](assets/The_Aquaholics_Forecast_HW11-eacba21e.png)
+
+Correlation Matrix
+![](assets/The_Aquaholics_Forecast_HW11-e1fcad32.png)
