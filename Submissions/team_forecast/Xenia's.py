@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+import datetime
+import json
 import urllib.request as req
 import urllib
 import fiona
@@ -122,7 +124,7 @@ y_data = AR_model_estimate(daily_flow, start_train_date,
 fig, ax = plt.subplots()
 ax.scatter(x_data, y_data, marker='.',
            color='purple', label='observations')
-ax.set(title="5. Autoregression Model", xlabel='flow t-1', ylabel='flow t',
+ax.set(title="Autoregression Model", xlabel='flow t-1', ylabel='flow t',
        xlim=[0, 175], ylim=[0, 175])
 ax.plot(np.sort(x_data), np.sort(y_data), label='AR model',
         color='aqua', linewidth=3)
@@ -130,7 +132,7 @@ ax.legend()
 
 # Xenia: Saving my plots
 fig.set_size_inches(7, 5)
-fig.savefig("5._Autoregression_Model.png")
+fig.savefig("Autoregression_Model.png")
 
 # %%
 # %%
