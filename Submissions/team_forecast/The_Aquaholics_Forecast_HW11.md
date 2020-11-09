@@ -17,8 +17,8 @@
 >### **Weekly Forecast for submission :chart_with_upwards_trend:**
 
 The one and two week forecast streamflow values for your teams.
-- Week 1: _____ cfs
-- Week 2: _____ cfs
+- Week 1: 129.29 cfs
+- Week 2: 143.42 cfs
 
 ---
 <a name="team"></a>

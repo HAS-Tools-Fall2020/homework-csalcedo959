@@ -11,6 +11,7 @@ import urllib.request as req
 import urllib
 import fiona
 import contextily as ctx
+import seaborn as sn
 from shapely.geometry import Point
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -148,7 +149,7 @@ fig.savefig("Autoregression_Model.png")
 daily_flow.index = daily_flow.index.tz_localize(tz="UTC")
 
 # Merge the USGS data (flow) with the Mesowest data (precip. and temp.)
-union = daily_flow['flow'].join(data_Meso_D[['Precipitation'], ['Temperature']])
+union = daily_flow['flow'].join(data_Meso_D)
 
 # Rank2D Pearson Correlation
 visualizer = Rank2D(algorithm="pearson")
@@ -177,5 +178,12 @@ plt.show()
 fig.set_size_inches(7, 5)
 plt.savefig("3._Correlation_Plot.png")
 fig.savefig("3._Correlation_Plot.png")
+
+# %%
+corrMatrix = union.corr()
+sn.heatmap(corrMatrix, annot=True)
+plt.show()
+fig.set_size_inches(7, 5)
+plt.savefig("Correlation_Plot.png")
 
 # %%

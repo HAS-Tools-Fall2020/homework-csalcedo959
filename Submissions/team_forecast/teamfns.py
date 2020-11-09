@@ -11,6 +11,10 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from sklearn.linear_model import LinearRegression
+import json
+import urllib.request as req
+import urllib
+import fiona
 
 
 # %% Functions
@@ -67,7 +71,7 @@ def AR_model_estimate(df, initial_train_date, final_train_date, time_shifts):
     print('intercept:', model_intercept)
     print('slope:', model_coefficients)
 
-    return model_intercept, model_coefficients, r_sq, x_data, y_data
+    return model_intercept, model_coefficients, r_sq
 
 
 def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,
@@ -162,3 +166,69 @@ def forecast_flows(flow_daily, time_shifts, start_train_date, end_train_date,
               np.round(flow_weekly.iloc[i]['flow'], 2))
 
     return flow_daily, flow_weekly, model_intercept, model_coefficients
+
+
+# %%
+# Function for Mesowest Temperature & Precipitation data
+
+
+def prec_temp_data(end_date):
+
+    """ Obtaining Precipitation and Air Temperature from the Mesowest website.
+
+
+    Parameters
+    ----------
+    end_date : updated date, to obtain the latest values.
+
+    Returns
+    ------
+    data_Meso : dataframe with precipitation and temperature per hour
+    data_Meso_D : dataframe with the means of precipitation and temperature \
+                  per day
+    data_Meso_W : dataframe with the means of precipitation and temperature \
+                  per week
+
+    """
+
+    # This is the base url that will be the start our final url
+    base_url = "http://api.mesowest.net/v2/stations/timeseries"
+
+    # Specific arguments for the data that we want
+    args = {
+            'start': '199701010000',
+            'end': end_date,
+            'obtimezone': 'UTC',
+            'vars': 'air_temp,precip_accum',
+            'stids': 'QVDA3',
+            'units': 'temp|C,precip|mm',
+            'token': 'demotoken'}
+
+    # Takes your arguments and paste them together into a string for the api
+    apiString = urllib.parse.urlencode(args)
+
+    # add the API string to the base_url
+    fullUrl = base_url + '?' + apiString
+    print('The Mesowest data is obtained from: ', fullUrl)
+
+    # Request the data
+    response = req.urlopen(fullUrl)
+
+    # What we need to do now is read this data. The complete format of this:
+    responseDict = json.loads(response.read())
+
+    # Create a dictionary. Keys shows the main elements of it.
+    responseDict.keys()
+
+    # Get the data we want:
+    dateTime = responseDict['STATION'][0]['OBSERVATIONS']['date_time']
+    airT = responseDict['STATION'][0]['OBSERVATIONS']['air_temp_set_1']
+    precip = responseDict['STATION'][0]['OBSERVATIONS']['precip_accum_set_1']
+
+    # Creating the pandas dataframe
+    data_Meso = pd.DataFrame({'Temperature': airT, 'Precipitation': precip},
+                             index=pd.to_datetime(dateTime))
+    data_Meso_D = data_Meso.resample('D').mean().round(2)
+    data_Meso_W = data_Meso.resample('W-SUN').mean().round(2)
+
+    return data_Meso, data_Meso_D, data_Meso_W
