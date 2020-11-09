@@ -149,6 +149,6 @@ sn.heatmap(corrMatrix, annot=True, vmin=-1, vmax=1, center=0, cmap='PRGn')
 plt.title("Correlation_Matrix")
 plt.show()
 fig.set_size_inches(7, 5)
-plt.savefig("Correlation_MAtrix.png")
+plt.savefig("Correlation_Matrix.png")
 
 # %%
