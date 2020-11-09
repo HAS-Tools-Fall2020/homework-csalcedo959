@@ -26,7 +26,7 @@ import contextily as ctx
 # URL Variables
 site = '09506000'
 start = '2009-03-02'  # Adjusted according to information availability
-end = '2020-11-06'
+end = '2020-11-14'
 url = "https://waterdata.usgs.gov/nwis/dv?cb_00060=on&format=rdb&site_no=" +\
        site + "&referred_module=sw&period=&begin_date=" + start + "&end_date="\
        + end
@@ -55,8 +55,8 @@ start_train_date = '2009-10-01'
 end_train_date = '2009-11-30'
 
 # Forecasting period
-start_for_date = '2020-11-01'
-end_for_date = '2020-11-14'
+start_for_date = '2020-11-08'
+end_for_date = '2020-11-21'
 
 # Used parameters for the model
 # Number of shifts
@@ -88,7 +88,6 @@ daily_flow_16w = stream_data.loc['1989-01-01':start_for_date][['flow']]
 flow_daily_seas, flow_weekly_seas, model_intercept16, model_coefficients16 = \
     tf.forecast_flows(daily_flow_16w, time_shifts, start_train_date,
                       end_train_date, start_for_date, end_for_date, 'seasonal')
-
 # %%
 # Seasonal Forecast for weeks between Nov. 01 to Dec. 12
 # NOTE: I did not use the outputs printed by the model to make the forecasts.\
@@ -160,7 +159,7 @@ plt.savefig("Correlation_Matrix.png")
 # %%
 
 # Code for the image, NOTE: Please see the last line of code to display the
-# image without needing to download everything below.
+# image if you do not want to download everything below.
 # Gages: https://water.usgs.gov/GIS/metadata/usgswrd/XML/gagesII_Sept2011.xml#stdorder
 # Rivers and Watersheds: http://uair.library.arizona.edu/item/292543/browse-data/Water?page=1
 # HUC 4: https://www.sciencebase.gov/catalog/item/5a96cda0e4b06990606c4d0f
