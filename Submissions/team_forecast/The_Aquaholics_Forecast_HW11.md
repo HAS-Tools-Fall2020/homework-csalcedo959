@@ -5,6 +5,10 @@
 ### Team Members:  *Diana, Danielle, Camilo & Xenia*.
 ### Date: *November 9, 2020*.
 
+___ 
+## Grade
+3/3 - Great job! I love your graphs and your map. Nice formatting on your markdown and good job working as a team.
+___
 ---
 
 ### Table of Contents:
