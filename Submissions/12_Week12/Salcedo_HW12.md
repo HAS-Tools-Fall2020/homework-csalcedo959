@@ -1,6 +1,13 @@
 # Forecast Week 12 - ReadMe File
 ## *Name:* Camilo Salcedo
 ## *Date:* November 16th 2020
+
+__
+
+### Grade
+3/3 - Great work! I really love your graphs. Also sorry I just realized I forgot to reply to your email. I will try to remember to answer your question in class tomorrow.
+
+Also I don't see your  slide in the slide deck? Can  you double check that you added it in the right place? 
 ___
 ### 1. A brief summary of the how you chose to generate your forecast this week.
 For this week, I decided to analyze three different datasets: Precipitation Rate (used by Laura in class), Air temperature and Pressure, obtained from the Physical Sciences Lab from the NOAA. The used datasets were downloaded as NCEP re-analysis data in format netCDF.
