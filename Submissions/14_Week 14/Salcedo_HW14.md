@@ -2,6 +2,9 @@
 ## *Name:* Camilo Salcedo
 ## *Date:* November 30th 2020
 
+## Grade
+3/3 - nice work.
+
 ## Table of Contents:
 1. [ Week 14 Forecasts ](#forecasts)
 2. [ FAIR Science Experience](#fair_exp)
