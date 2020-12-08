@@ -2,6 +2,9 @@
 ## *Name:* Camilo Salcedo
 ## *Date:* December 7th 2020
 
+### Grade
+3/3 - Great work. Glad you got it working and I'm happy you were able to use Diana's fix to debug your problem. 
+
 ## Table of Contents:
 1. [ Week 15 Forecasts ](#forecasts)
 2. [ Supercomputing](#superc)
